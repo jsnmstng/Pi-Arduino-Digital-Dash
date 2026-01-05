@@ -90,6 +90,8 @@ volatile uint32_t vssWindowStartUs = 0;
 static constexpr uint8_t VSS_MIN_PULSES_TO_MOVE = 6;
 static constexpr float VSS_MIN_UNLOCK_KPH = 8.0f; // ~5 mph
 static uint8_t vssValidPulseStreak = 0;
+static constexpr float VSS_IDLE_RPM_CUTOFF = 1800.0f;
+
 
 
 
@@ -180,6 +182,7 @@ volatile uint32_t tachPeriodUs = 0;
 volatile uint32_t lastTachUs   = 0;
 volatile uint32_t vssPeriodUs = 0;
 volatile uint32_t vssLastUs   = 0;
+volatile float engineRpm = 0.0f;
 
 
 float rpmNow = 0.0f;
@@ -495,6 +498,7 @@ void updateRPM() {
     rpmFiltered = rpmRaw;
 
   rpmNow = rpmFiltered;
+  engineRpm = rpmFiltered;
 }
 
 // =======================================================
@@ -578,6 +582,14 @@ void updateVSS() {
   // NOT MOVING: require sustained evidence to unlock
   // --------------------------------
   if (!vssMoving) {
+
+    // Block idle-correlated VSS chatter (only while trying to unlock)
+    if (engineRpm < VSS_IDLE_RPM_CUTOFF) {
+      startGood = 0;
+      kphNow = 0.0f;
+      kphEma = 0.0f;
+      return;
+    }
     // If pulses are not continuous, treat as noise and stay at 0
     if ((now - lastPulse) > CONTINUOUS_US) {
       startGood = 0;
