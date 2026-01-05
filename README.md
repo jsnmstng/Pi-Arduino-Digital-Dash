@@ -70,7 +70,7 @@ GPIO Terminal Block Breakout Board -29$ https://a.co/d/5wfxBdf
 
 Pi 5v wall plug(to bench test) - 12$ https://a.co/d/3odHP2B
 
-22 awg wire - 8$ https://a.co/d/5wfxBdf
+22 awg wire - 8$ https://a.co/d/eDb6Mbe
 
 
 
