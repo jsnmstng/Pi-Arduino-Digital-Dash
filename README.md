@@ -19,7 +19,7 @@ For free dashboard downloads go to https://tunerstudiodashboards.com/ (you will 
 <br>
 <br>
 ## **Arduino Setup**
-After the dashboard is setup how you like, the fun starts.  I utilized a arduino to communicate with the Pi and TS Dash to pass sensor data.  The ```.ino``` file in this repo contains all the code to add the Arduino Mega.
+After the dashboard is setup how you like, the fun starts.  I utilized a arduino to communicate with the Pi and TS Dash to pass sensor data.  The ```.ino``` file in this repo contains all the code to add the Arduino Mega.  I will try to keep this file updated with suggestions from users or with additions I find useful 
 <br>
 <br>
 To upload the ```.ino``` to the arduino you will need the ArduinoIDE(https://www.arduino.cc/en/software/) and to download it to a separate machine(not needed on the Pi)
