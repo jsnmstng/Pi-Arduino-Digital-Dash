@@ -37,6 +37,9 @@ Press the right arrow button in the upper right(upload) to transfer the ```.ino`
 Wait for it to say "Done uploading" at the bottom and then you can unplug the arduino.
 <br>
 <br>
+After that you just need to wire the sensors to the arduino.  My youtube video goes over that in depth, but basically you need to utilize sensors that already exist on your vehicle or purchase new ones solely for this purpose.
+<br>
+<br>
 ## **3d Print files**
 3d print file for 02-07 Subaru wrx/sti cluster ----  https://makerworld.com/en/models/2182382-02-07-subaru-wrx-sti-gauge-cluster-for-7in-screen
 <br>
