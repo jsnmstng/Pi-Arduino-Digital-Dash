@@ -1,15 +1,18 @@
 # Pi-Arduino-Digital-Dash
-A DIY digital dash I made using a Raspberry Pi 5, Arduino Mega 2560, and a touchscreen.  While my use case was a 02-07 Subaru WRX/STI variation, this will work for any car from 1920-2025+, with OEM ECUs, Standalones ECUs, with or without CANBUS...as long as you have sensors to pass data, this can work for you.  This [youtube video](https://youtu.be/Trl1QRnZZaE) contains an entire walkthrough
+A DIY digital dash I made using a Raspberry Pi 5, Arduino Mega 2560, and a touchscreen.  While my use case was a 02-07 Subaru WRX/STI variation, this will work for any car from 1920-2025+, with OEM ECUs, Standalones ECUs, with or without CANBUS...as long as you have sensors to pass data, this can work for you.  This [youtube video](https://youtu.be/Trl1QRnZZaE) contains an entire walkthrough. The code/files I made and used are all here.
 
 #### For CANBUS ####
 Please read the ```CANBUS_Communication_Setup.md```
+<br>
 I have added a Haltech INO to read directly from haltech's CANBUS.  This is just a WIP/draft and the arduino will need to be added as a CAN node.  That can be done with this 10$ part(https://a.co/d/0xAnIYF)
 
 Future standalones/canbus configs will be added as I have time.
-
-The code/files I made and used are all here.  
+  
 <br>
-## ** ***Please do not use these files to sell this to others.  I made these so that those wanting to modify their dash/cluster dont have to spend an arm and a leg to do so.*****
+
+### *****Please do not use these files to sell this to others.  I made these so that those wanting to modify their dash/cluster dont have to spend an arm and a leg to do so.***** ###
+<br>
+<br>
 
 ## **Pi Setup**
 I have added the dietPi OS img file with TS Dash already setup and autostarting on boot.  You will only need to write the image to your SD Card or boot disk, and then install it in Raspberry Pi 5.
