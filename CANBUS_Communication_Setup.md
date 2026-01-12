@@ -37,3 +37,4 @@ MCP2515 -> Haltech CAN
 | **CANH**         | CAN High |
 | **CANL**         | CAN Low  |
 
+Copyright (c) 2025 Travis Way
