@@ -94,3 +94,4 @@ Pi 5v wall plug(to bench test) - 12$ https://a.co/d/3odHP2B
 
 
 
+Copyright (c) 2025 Travis Way
