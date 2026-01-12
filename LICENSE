@@ -6,7 +6,9 @@ Copyright (c) 2025 Travis Way
 Permission is hereby granted to any person obtaining a copy of this
 software and associated documentation files (the "Software") to use,
 copy, modify, and distribute the Software for PERSONAL, EDUCATIONAL,
-or NON-COMMERCIAL purposes only, subject to the following conditions:
+or NON-COMMERCIAL purposes only, provided that any distribution is
+without charge or commercial advantage, subject to the following
+conditions:
 
 1. Non-Commercial Use Only
    The Software may NOT be used, in whole or in part, for any
@@ -35,5 +37,16 @@ or NON-COMMERCIAL purposes only, subject to the following conditions:
 4. Commercial Licensing
    Commercial use is available by separate written agreement.
    Contact the author to obtain a commercial license.
+
+5. Termination
+   This License is automatically terminated if you fail to comply
+   with any of its terms or conditions. Upon termination, you must
+   immediately cease all use, copying, modification, and distribution
+   of the Software.
+
+This License shall be governed by the laws of the State of Washington, USA.
+
+Any use of the Software outside the scope of this License constitutes
+copyright infringement.
 
 END OF LICENSE
