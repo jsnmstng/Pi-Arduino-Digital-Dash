@@ -3,9 +3,6 @@
 This project is source-available and free for personal and educational use.
 Commercial use is NOT permitted.
 
-If you wish to use this project in a commercial product or service, please contact the author for licensing.
-
-
 # Pi-Arduino-Digital-Dash
 A DIY digital dash I made using a Raspberry Pi 5, Arduino Mega 2560, and a touchscreen.  While my use case was a 02-07 Subaru WRX/STI variation, this will work for any car from 1920-2025+, with OEM ECUs, Standalones ECUs, with or without CANBUS...as long as you have sensors to pass data, this can work for you.  This [youtube video](https://youtu.be/Trl1QRnZZaE) contains an entire walkthrough. The code/files I made and used are all here.
 
