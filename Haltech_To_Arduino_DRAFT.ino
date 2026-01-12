@@ -1,6 +1,7 @@
 // =======================================================
 // Travis Digital Dash – Haltech CAN → TS Dash Serial Bridge
-// Arduino Mega 2560 + MCP2515 (16MHz) @ 500kbps
+// Arduino Mega 2560 + MCP2515 (16MHz) @ 500kbps 
+// Copyright (c) 2025 Travis Way
 //
 // Serial side emulates the INI requirements:
 //   queryCommand   = "Q"  -> returns "speeduino-travis"
