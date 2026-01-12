@@ -2,7 +2,7 @@
 // Travis Digital Dash – TunerStudio Interface
 // FINAL PRODUCTION BUILD
 // Arduino Mega 2560
-//
+// Copyright (c) 2025 Travis Way
 // Signature: speeduino-travis
 // =======================================================
 
