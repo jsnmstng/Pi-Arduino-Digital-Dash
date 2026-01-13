@@ -1,6 +1,6 @@
 // =======================================================
 // Travis Digital Dash – TunerStudio Interface
-// FINAL PRODUCTION BUILD
+// FINAL PRODUCTION BUILD  +  BATT VOLTAGE
 // Arduino Mega 2560
 // Copyright (c) 2025 Travis Way
 // Signature: speeduino-travis
@@ -29,6 +29,14 @@ static constexpr float VREF    = 5.0f;
 // ---------- EMA FILTERING ----------
 static constexpr float EMA_ALPHA_FAST = 0.12f;
 static constexpr float EMA_ALPHA_SLOW = 0.08f;
+
+
+// ----------- BATT VOLTAGE ------------
+static constexpr float    VBAT_R1 = 22000.0f; // 22k
+static constexpr float    VBAT_R2 = 10000.0f; // 10k
+static constexpr float    VBAT_DIV_RATIO = (VBAT_R1 + VBAT_R2) / VBAT_R2;
+static constexpr float    VBAT_SANITY_MIN = 9.0f;
+static constexpr float    VBAT_SANITY_MAX = 17.0f; //Some Alternators can hit 17v on startup
 
 // ---------- PRESSURE SENDERS ----------
 static constexpr float PRESSURE_V_MIN = 0.5f;
@@ -133,6 +141,7 @@ static const char VERSION[32]   = "Travis Digital Dash v1.0";
 #define OIL_TEMP_PIN       A3
 #define BOOST_PIN          A4
 #define FUEL_LEVEL_PIN     A5
+#define BATT_VOLTAGE_PIN   A6
 
 #define RPM_PIN 2
 #define VSS_PIN 3
@@ -196,6 +205,9 @@ static uint32_t trHold = 0;
 static float odometerMiles = 0.0f;
 static uint32_t lastOdoMs = 0;
 
+static float emaVbat = NAN;
+static uint16_t vbatCached = 0; // scaled for TS
+
 // =======================================================
 // HELPERS
 // =======================================================
@@ -234,6 +246,18 @@ static inline uint8_t clampU8(int v){
   if(v<0) return 0;
   if(v>255) return 255;
   return v;
+}
+
+uint16_t readBatteryVoltage_x10(float &ema) {
+  float adc = readAdcFiltered(BATT_VOLTAGE_PIN, ema, 8, 1, EMA_ALPHA_SLOW);
+  float vAdc = adc * (VREF / ADC_MAX);
+  float vBat = vAdc * VBAT_DIV_RATIO;
+
+  // Sanity clamp
+  if (vBat < VBAT_SANITY_MIN || vBat > VBAT_SANITY_MAX)
+    return vbatCached; // hold last good value
+
+  return (uint16_t)(vBat * 10.0f + 0.5f);
 }
 
 // --- ProSport interpolation helper ---
@@ -783,6 +807,16 @@ void updateOch(){
   och[62] = p[2];
   och[63] = p[3];
 
+  // -----------------------
+  // Battery Voltage
+  // -----------------------
+  if (slowUpdate) {
+    vbatCached = readBatteryVoltage_x10(emaVbat);
+  }
+
+  och[22] = vbatCached & 0xFF;
+  och[23] = vbatCached >> 8;
+
 
 }
 
@@ -816,6 +850,8 @@ void setup(){
   pinMode(CEL_PIN, INPUT_PULLUP);
   pinMode(HIGH_BEAM_PIN, INPUT_PULLUP);
   pinMode(HANDBRAKE_PIN, INPUT_PULLUP);
+
+  vbatCached = readBatteryVoltage_x10(emaVbat);
 
   pinMode(RPM_PIN, INPUT);
   pinMode(VSS_PIN, INPUT);
