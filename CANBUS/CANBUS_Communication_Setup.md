@@ -1,4 +1,14 @@
-# Adding MCP2515 to Arduino to access CANBUS. #
+# CANBUS INTEGRATION #
+
+## Finding CANBUS output for your specific car/build ##
+
+SavvyCan(https://www.savvycan.com/) will allow you to hook up to the OBD2 port on your car and will give you all the CANBUS data.  
+
+It will be up to you to determine, based off TimeStamps, IDs, and Data, what each value corresponds to as each CANBUS network is different
+
+
+
+## Adding MCP2515 to Arduino to access CANBUS ##
 This effectively makes the Arduino a CANBUS node
 
 The specific INO file for HALTECHs or other standalones which is in the project will need to be uploaded to the Arduino via Arduino IDE
@@ -8,7 +18,6 @@ Do this by:
 - Going to the top and clikcing: ```Sketch → Include Library → Manage Libraries```
 - Search for ```MCP_CAN_lib```
 - This the libary the CANBUS ino's use ```#include <mcp_can.h>```
-
 
 
 ## Part needed: ##
