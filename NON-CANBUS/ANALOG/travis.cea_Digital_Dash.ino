@@ -19,7 +19,7 @@
 // • Used ONLY on first-ever boot
 // • Ignored once EEPROM is initialized
 // • Change only if replacing cluster or resetting EEPROM
-static constexpr float ODOMETER_INITIAL_MILES = 2200.0f;
+static constexpr float ODOMETER_INITIAL_MILES = 100.0f;
 
 
 // ---------- ADC / VREF ----------
@@ -80,22 +80,22 @@ static constexpr float    FUEL_V_MIN_OK  = 0.05f;
 static constexpr float    FUEL_V_MAX_OK  = 4.95f;
 
 // ---------- RPM ----------
-static constexpr uint8_t  PULSES_PER_REV   = 2;     // Subaru tach
-static constexpr uint32_t RPM_MIN_PULSE_US = 3000;  // Noise reject
+static constexpr uint8_t  PULSES_PER_REV   = 4;     // 351W AND MSD 7AL-3 BOX
+static constexpr uint32_t RPM_MIN_PULSE_US = 1300;  // Noise reject
 static constexpr float    RPM_MAX          = 9000.0f;
 static constexpr uint32_t RPM_STOP_TIMEOUT_MS = 400;
 static constexpr float    DECEL_RPM_PER_SEC = 22000.0f;
 
 // ---------- VSS ----------
-static constexpr uint32_t VSS_MIN_PULSE_US = 500;
-static constexpr float    VSS_PULSES_PER_KM = 8000.0f;
+static constexpr uint32_t VSS_MIN_PULSE_US = 50; // LOWERED BECAUSE THE DAKOTA DIGITAL SIGNAL GENERATOR IS 40 PER REVOLUSION
+static constexpr float    VSS_PULSES_PER_KM = 74564.54f; // 120,000 PULSES PER MILE 40 PER REVOLUTION
 static constexpr uint32_t VSS_MIN_VALID_PERIOD_US = 1500;    // speed spike guard
-static constexpr uint32_t VSS_STOP_TIMEOUT_US = 2500000;
+static constexpr uint32_t VSS_STOP_TIMEOUT_US = 500000; //CHANGED TO HALF SECOND
 static constexpr float    VSS_MAX_KPH = 300.0f;
 volatile uint16_t vssPulseCount = 0;
 volatile uint32_t vssLastPulseUs = 0;
 volatile uint32_t vssWindowStartUs = 0;
-static constexpr uint8_t VSS_MIN_PULSES_TO_MOVE = 6;
+static constexpr uint8_t VSS_MIN_PULSES_TO_MOVE = 12; // DOUBLED DUE TO TWICE AS MANY PULSES PER REVOLUTION
 static constexpr float VSS_MIN_UNLOCK_KPH = 8.0f; // ~5 mph
 static uint8_t vssValidPulseStreak = 0;
 static constexpr float VSS_IDLE_RPM_CUTOFF = 1800.0f;
@@ -425,7 +425,7 @@ void isrRPM() {
   lastTachUs = now;
 
   // Reject noise / impossible pulses
-  if (dt > RPM_MIN_PULSE_US && dt < 80000) { // ~375 RPM floor
+  if (dt > RPM_MIN_PULSE_US && dt < 200000) { // ~375 RPM floor
     tachPeriodUs = dt;
     lastPulseMs  = millis();
   }
@@ -436,7 +436,7 @@ void isrVSS() {
 
   static uint32_t lastUs = 0;
   uint32_t dt = now - lastUs;
-  if (dt < 800) return;          // noise reject (fast spikes)
+  if (dt < 120) return;          // noise reject (fast spikes) LOWERED DUE TO HIGHER PULSE RATE OF DD PULSE GENERATOR
   lastUs = now;
 
   vssLastPulseUs = now;
@@ -491,7 +491,7 @@ void updateRPM() {
   // THEN spike rejection
   if (rpmFiltered > 0.0f) {
     float delta = fabs(rpmRaw - rpmFiltered);
-    if (delta > 2000.0f) {
+    if (delta > 3500.0f) {
       rpmNow = rpmFiltered;
       return;
     }
@@ -529,8 +529,8 @@ void updateRPM() {
 // updateVSS
 // =======================================================
 void updateVSS() {
-  const uint32_t WINDOW_US = 250000;      // 250 ms
-  const uint32_t CONTINUOUS_US = 300000;  // must be seeing pulses recently to "start moving"
+  const uint32_t WINDOW_US = 100000;      // 100 ms
+  const uint32_t CONTINUOUS_US = 150000;  // must be seeing pulses recently to "start moving"
   const uint8_t  START_GOOD_WINDOWS = 4;  // consecutive good windows required to unlock motion
 
   static uint8_t startGood = 0;
@@ -600,7 +600,7 @@ void updateVSS() {
   float kphRaw = (pulsesPerSec * 3600.0f) / VSS_PULSES_PER_KM;
 
   // Deadband
-  if (kphRaw < 2.0f) kphRaw = 0.0f;
+  if (kphRaw < .5f) kphRaw = 0.0f;
 
   // --------------------------------
   // NOT MOVING: require sustained evidence to unlock
@@ -623,7 +623,7 @@ void updateVSS() {
     }
 
     // Require enough pulses AND reasonable speed for multiple windows
-    if (pulses >= VSS_MIN_PULSES_TO_MOVE && kphRaw >= 5.0f) {
+    if (pulses >= VSS_MIN_PULSES_TO_MOVE && kphRaw >= 1.5f) {
       if (startGood < 255) startGood++;
     } else {
       startGood = 0;
@@ -652,9 +652,9 @@ void updateVSS() {
   if (pulses < VSS_MIN_PULSES_TO_MOVE) {
 
     // Decay speed gradually (simulates rolling to a stop)
-    kphEma *= 0.75f;   // ~25% drop per window (~1 sec to zero)
+    kphEma *= 0.85f;   // ~25% drop per window (~1 sec to zero)
 
-    if (kphEma < 1.5f) {
+    if (kphEma < .5f) {
       kphEma = 0.0f;
       vssMoving = false;   // now officially stopped
       startGood = 0;
@@ -666,15 +666,15 @@ void updateVSS() {
 
 
   // Prevent sudden drops (glitch protection)
-  if (isfinite(kphEma) && kphRaw < kphEma - 4.0f) {
-    kphRaw = kphEma - 4.0f;
+  if (isfinite(kphEma) && kphRaw < kphEma - 2.0f) {
+    kphRaw = kphEma - 2.0f;
   }
 
   // Smooth output
   if (isnan(kphEma)) {
     kphEma = kphRaw;
   } else {
-    float alpha = (kphEma < 10.0f) ? 0.08f : 0.25f;
+    float alpha = (kphEma < 10.0f) ? 0.15f : 0.35f;
     kphEma += alpha * (kphRaw - kphEma);
   }
 
@@ -698,7 +698,7 @@ void updateOdometer(float speedKph) {
   float dtHours = (now - lastOdoMs) / 3600000.0f;
   lastOdoMs = now;
 
-  if (speedKph > 0.5f) {   // noise guard
+  if (speedKph > 0.1f) {   // noise guard
     float speedMph = speedKph * 0.621371f;
     odometerMiles += speedMph * dtHours;
   }
