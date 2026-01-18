@@ -87,15 +87,15 @@ static constexpr uint32_t RPM_STOP_TIMEOUT_MS = 400;
 static constexpr float    DECEL_RPM_PER_SEC = 22000.0f;
 
 // ---------- VSS ----------
-static constexpr uint32_t VSS_MIN_PULSE_US = 50; // LOWERED BECAUSE THE DAKOTA DIGITAL SIGNAL GENERATOR IS 40 PER REVOLUSION
-static constexpr float    VSS_PULSES_PER_KM = 74564.54f; // 120,000 PULSES PER MILE 40 PER REVOLUTION
+static constexpr uint32_t VSS_MIN_PULSE_US = 50; // LOWERED BECAUSE THE DAKOTA DIGITAL 
+static constexpr float    VSS_PULSES_PER_KM = 9941.0f; // 16,000 PULSES PER MILE 
 static constexpr uint32_t VSS_MIN_VALID_PERIOD_US = 1500;    // speed spike guard
 static constexpr uint32_t VSS_STOP_TIMEOUT_US = 500000; //CHANGED TO HALF SECOND
 static constexpr float    VSS_MAX_KPH = 300.0f;
 volatile uint16_t vssPulseCount = 0;
 volatile uint32_t vssLastPulseUs = 0;
 volatile uint32_t vssWindowStartUs = 0;
-static constexpr uint8_t VSS_MIN_PULSES_TO_MOVE = 12; // DOUBLED DUE TO TWICE AS MANY PULSES PER REVOLUTION
+static constexpr uint8_t VSS_MIN_PULSES_TO_MOVE = 6; // 
 static constexpr float VSS_MIN_UNLOCK_KPH = 8.0f; // ~5 mph
 static uint8_t vssValidPulseStreak = 0;
 static constexpr float VSS_IDLE_RPM_CUTOFF = 1800.0f;
@@ -529,9 +529,9 @@ void updateRPM() {
 // updateVSS
 // =======================================================
 void updateVSS() {
-  const uint32_t WINDOW_US = 100000;      // 100 ms
-  const uint32_t CONTINUOUS_US = 150000;  // must be seeing pulses recently to "start moving"
-  const uint8_t  START_GOOD_WINDOWS = 4;  // consecutive good windows required to unlock motion
+  const uint32_t WINDOW_US = 200000;      // 200 ms
+  const uint32_t CONTINUOUS_US = 250000;  // must be seeing pulses recently to "start moving"
+  const uint8_t  START_GOOD_WINDOWS = 3;  // consecutive good windows required to unlock motion
 
   static uint8_t startGood = 0;
 
@@ -623,7 +623,7 @@ void updateVSS() {
     }
 
     // Require enough pulses AND reasonable speed for multiple windows
-    if (pulses >= VSS_MIN_PULSES_TO_MOVE && kphRaw >= 1.5f) {
+    if (pulses >= VSS_MIN_PULSES_TO_MOVE && kphRaw >= 1.0f) {
       if (startGood < 255) startGood++;
     } else {
       startGood = 0;
@@ -649,7 +649,7 @@ void updateVSS() {
 
   // If too few pulses this window while moving,
   // allow speed to decay toward zero
-  if (pulses < VSS_MIN_PULSES_TO_MOVE) {
+  if (pulses < 2) {
 
     // Decay speed gradually (simulates rolling to a stop)
     kphEma *= 0.85f;   // ~25% drop per window (~1 sec to zero)
