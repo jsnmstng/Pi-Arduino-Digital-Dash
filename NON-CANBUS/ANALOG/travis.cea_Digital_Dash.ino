@@ -19,7 +19,7 @@
 // • Used ONLY on first-ever boot
 // • Ignored once EEPROM is initialized
 // • Change only if replacing cluster or resetting EEPROM
-static constexpr float ODOMETER_INITIAL_MILES = 100.0f;
+static constexpr float ODOMETER_INITIAL_MILES = 231.0f;
 
 
 // ---------- ADC / VREF ----------
